@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/fridge_item.dart';
 import '../models/home_models.dart';
+import '../models/analysis_models.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:8000';
@@ -49,5 +50,31 @@ class ApiService {
       return data.map((e) => RecentItem.fromJson(e)).toList();
     }
     throw Exception('최근 활동 불러오기 실패');
+  }
+
+  static Future<List<AnalysisItem>> getAnalysisItems() async {
+    final response = await http.get(Uri.parse('$baseUrl/analysis/items'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((e) => AnalysisItem.fromJson(e)).toList();
+    }
+    throw Exception('식재료 목록 불러오기 실패');
+  }
+
+  static Future<List<CategoryStat>> getCategoryStats() async {
+    final response = await http.get(Uri.parse('$baseUrl/analysis/stats/category'));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((e) => CategoryStat.fromJson(e)).toList();
+    }
+    throw Exception('카테고리 통계 불러오기 실패');
+  }
+
+  static Future<OverallStats> getOverallStats() async {
+    final response = await http.get(Uri.parse('$baseUrl/analysis/stats/overall'));
+    if (response.statusCode == 200) {
+      return OverallStats.fromJson(jsonDecode(response.body));
+    }
+    throw Exception('전체 통계 불러오기 실패');
   }
 }
