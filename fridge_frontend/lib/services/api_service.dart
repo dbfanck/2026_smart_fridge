@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import '../models/fridge_item.dart';
 import '../models/home_models.dart';
@@ -66,5 +67,17 @@ class ApiService {
       return OverallStats.fromJson(jsonDecode(response.body));
     }
     throw Exception('전체 통계 불러오기 실패');
+  }
+
+  static Future<RecipeResult> getRecipe() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/analysis/recipe'),
+      headers: {'Content-Type': 'application/json'},
+    ).timeout(const Duration(seconds: 30));
+    if (response.statusCode == 200) {
+      return RecipeResult.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+    }
+    final detail = jsonDecode(utf8.decode(response.bodyBytes))['detail'] ?? '알 수 없는 오류';
+    throw Exception(detail);
   }
 }

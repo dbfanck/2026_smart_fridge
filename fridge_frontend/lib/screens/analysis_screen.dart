@@ -1,55 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/analysis_models.dart';
 import '../services/api_service.dart';
-
-// ────────────────────────────── 더미 레시피 ──────────────────────────────────
-
-class _Recipe {
-  final String name;
-  final String description;
-  final List<String> ingredients;
-  final int minutes;
-  const _Recipe({
-    required this.name,
-    required this.description,
-    required this.ingredients,
-    required this.minutes,
-  });
-}
-
-const _dummyRecipes = [
-  _Recipe(
-    name: '계란볶음밥',
-    description: '냉장고에 있는 채소와 계란으로 만드는 간편 볶음밥입니다.',
-    ingredients: ['계란 2개', '밥 1공기', '당근 1/4개', '대파 1/2대', '간장 1T', '참기름'],
-    minutes: 15,
-  ),
-  _Recipe(
-    name: '된장찌개',
-    description: '두부와 애호박을 넣어 든든하게 끓여낸 구수한 된장찌개입니다.',
-    ingredients: ['두부 1/2모', '애호박 1/2개', '감자 1개', '된장 2T', '멸치 육수 2컵', '청양고추'],
-    minutes: 25,
-  ),
-  _Recipe(
-    name: '참치 샐러드',
-    description: '신선한 채소와 참치를 버무린 간단하고 건강한 샐러드입니다.',
-    ingredients: ['참치캔 1개', '양배추 1/4통', '오이 1/2개', '방울토마토 8개', '마요네즈 2T', '레몬즙'],
-    minutes: 10,
-  ),
-  _Recipe(
-    name: '감자전',
-    description: '바삭하게 부쳐낸 고소한 감자전으로 간식이나 반찬으로 제격입니다.',
-    ingredients: ['감자 3개', '소금 약간', '식용유', '쪽파 2대'],
-    minutes: 20,
-  ),
-  _Recipe(
-    name: '채소 볶음',
-    description: '냉장고 속 남은 채소를 한꺼번에 볶아낸 알록달록 영양 요리입니다.',
-    ingredients: ['브로콜리 1/2개', '당근 1/2개', '양파 1/2개', '버섯 100g', '굴소스 1T', '마늘 3쪽'],
-    minutes: 12,
-  ),
-];
 
 // ────────────────────────────── 메인 화면 ────────────────────────────────────
 
@@ -80,14 +31,21 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   void _onRecommendTapped() async {
     setState(() => _isLoadingRecipe = true);
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (!mounted) return;
-    setState(() => _isLoadingRecipe = false);
-    final recipe = _dummyRecipes[Random().nextInt(_dummyRecipes.length)];
-    _showRecipeBottomSheet(recipe);
+    try {
+      final recipe = await ApiService.getRecipe();
+      if (!mounted) return;
+      _showRecipeBottomSheet(recipe);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('레시피 추천 실패: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoadingRecipe = false);
+    }
   }
 
-  void _showRecipeBottomSheet(_Recipe recipe) {
+  void _showRecipeBottomSheet(RecipeResult recipe) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -433,7 +391,7 @@ class _VerticalBarChart extends StatelessWidget {
 // ────────────────────────────── 레시피 바텀시트 ──────────────────────────────
 
 class _RecipeSheet extends StatelessWidget {
-  final _Recipe recipe;
+  final RecipeResult recipe;
   const _RecipeSheet({required this.recipe});
 
   @override

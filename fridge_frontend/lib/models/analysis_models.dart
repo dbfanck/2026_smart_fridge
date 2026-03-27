@@ -1,3 +1,26 @@
+class RecipeResult {
+  final String name;
+  final String description;
+  final List<String> ingredients;
+  final int minutes;
+
+  RecipeResult({
+    required this.name,
+    required this.description,
+    required this.ingredients,
+    required this.minutes,
+  });
+
+  factory RecipeResult.fromJson(Map<String, dynamic> json) {
+    return RecipeResult(
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      ingredients: List<String>.from(json['ingredients'] ?? []),
+      minutes: json['minutes'] ?? 0,
+    );
+  }
+}
+
 class CategoryStat {
   final String category;
   final int purchased;
