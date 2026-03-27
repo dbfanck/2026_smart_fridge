@@ -6,7 +6,7 @@ import '../models/home_models.dart';
 import '../models/analysis_models.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8000';
+  static const String baseUrl = 'https://two026-smart-fridge.onrender.com';
 
   static Future<List<FridgeItem>> getLayouts() async {
     final response = await http.get(Uri.parse('$baseUrl/layouts'));
@@ -53,7 +53,9 @@ class ApiService {
   }
 
   static Future<List<CategoryStat>> getCategoryStats() async {
-    final response = await http.get(Uri.parse('$baseUrl/analysis/stats/category'));
+    final response = await http.get(
+      Uri.parse('$baseUrl/analysis/stats/category'),
+    );
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((e) => CategoryStat.fromJson(e)).toList();
@@ -62,7 +64,9 @@ class ApiService {
   }
 
   static Future<OverallStats> getOverallStats() async {
-    final response = await http.get(Uri.parse('$baseUrl/analysis/stats/overall'));
+    final response = await http.get(
+      Uri.parse('$baseUrl/analysis/stats/overall'),
+    );
     if (response.statusCode == 200) {
       return OverallStats.fromJson(jsonDecode(response.body));
     }
@@ -70,14 +74,17 @@ class ApiService {
   }
 
   static Future<RecipeResult> getRecipe() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/analysis/recipe'),
-      headers: {'Content-Type': 'application/json'},
-    ).timeout(const Duration(seconds: 30));
+    final response = await http
+        .get(
+          Uri.parse('$baseUrl/analysis/recipe'),
+          headers: {'Content-Type': 'application/json'},
+        )
+        .timeout(const Duration(seconds: 30));
     if (response.statusCode == 200) {
       return RecipeResult.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
     }
-    final detail = jsonDecode(utf8.decode(response.bodyBytes))['detail'] ?? '알 수 없는 오류';
+    final detail =
+        jsonDecode(utf8.decode(response.bodyBytes))['detail'] ?? '알 수 없는 오류';
     throw Exception(detail);
   }
 }
