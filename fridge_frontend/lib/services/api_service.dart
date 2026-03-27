@@ -73,6 +73,10 @@ class ApiService {
     throw Exception('전체 통계 불러오기 실패');
   }
 
+  static Future<void> updateSpoiled() async {
+    await http.patch(Uri.parse('$baseUrl/items/update-spoiled'));
+  }
+
   static Future<RecipeResult> getRecipe() async {
     final response = await http
         .get(
