@@ -73,3 +73,19 @@ def get_expiring_items():
 def get_recent_items():
     response = supabase.table("FRIDGE_ITEM").select("product_name, created_at").order("created_at", desc=True).limit(5).execute()
     return response.data
+
+# 아이템 삭제
+@router.delete("/items/{item_id}", status_code=204)
+def delete_item(item_id: int):
+    response = supabase.table("FRIDGE_ITEM").delete().eq("item_id", item_id).execute()
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+# weight 범위로 아이템 조회
+@router.get("/items/search")
+def search_items_by_weight(weight_min: float, weight_max: float):
+    response = (
+        supabase.table("FRIDGE_ITEM").select("*")
+        .gte("weight", weight_min).lte("weight", weight_max).execute()
+    )
+    return response.data

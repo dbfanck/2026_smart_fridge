@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import items, status, layouts, analysis
+from routers import items, layouts, analysis
 
 app = FastAPI()
 
@@ -11,7 +11,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(status.router)
 app.include_router(items.router)
 app.include_router(layouts.router)
 app.include_router(analysis.router)

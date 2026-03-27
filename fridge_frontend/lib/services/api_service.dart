@@ -24,16 +24,6 @@ class ApiService {
     throw Exception('상세 정보 불러오기 실패');
   }
 
-  static Future<FridgeStatus?> getStatus() async {
-    final response = await http.get(Uri.parse('$baseUrl/status'));
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      if (data.isEmpty) return null;
-      return FridgeStatus.fromJson(data.last);
-    }
-    throw Exception('냉장고 상태 불러오기 실패');
-  }
-
   static Future<List<ExpiringItem>> getExpiringItems() async {
     final response = await http.get(Uri.parse('$baseUrl/items/expiring'));
     if (response.statusCode == 200) {

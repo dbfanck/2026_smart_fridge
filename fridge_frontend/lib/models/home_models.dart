@@ -1,17 +1,3 @@
-class FridgeStatus {
-  final double temperature;
-  final double humidity;
-
-  FridgeStatus({required this.temperature, required this.humidity});
-
-  factory FridgeStatus.fromJson(Map<String, dynamic> json) {
-    return FridgeStatus(
-      temperature: (json['temperature'] as num).toDouble(),
-      humidity: (json['humidity'] as num).toDouble(),
-    );
-  }
-}
-
 class ExpiringItem {
   final int itemId;
   final String productName;

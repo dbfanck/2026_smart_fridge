@@ -10,7 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<FridgeStatus?> _statusFuture;
   late Future<List<ExpiringItem>> _expiringFuture;
   late Future<List<RecentItem>> _recentFuture;
 
@@ -21,7 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _load() {
-    _statusFuture = ApiService.getStatus();
     _expiringFuture = ApiService.getExpiringItems();
     _recentFuture = ApiService.getRecentItems();
   }
@@ -35,8 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildStatusSection(),
-          const SizedBox(height: 16),
           _buildExpiringSection(),
           const SizedBox(height: 16),
           _buildRecentSection(),
@@ -86,43 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
           child,
         ],
       ),
-    );
-  }
-
-  // 냉장고 상태 요약
-  Widget _buildStatusSection() {
-    return FutureBuilder<FridgeStatus?>(
-      future: _statusFuture,
-      builder: (context, snapshot) {
-        final status = snapshot.data;
-        final loading = snapshot.connectionState == ConnectionState.waiting;
-
-        return _sectionCard(
-          icon: Icons.thermostat,
-          title: '냉장고 상태',
-          child: Row(
-            children: [
-              Expanded(
-                child: _statusTile(
-                  icon: Icons.device_thermostat,
-                  label: '온도',
-                  value: loading ? '-' : status != null ? '${status.temperature.toStringAsFixed(1)}°C' : '-',
-                  color: const Color(0xFF2D5BFF),
-                ),
-              ),
-              Container(width: 1, height: 50, color: Colors.grey[200]),
-              Expanded(
-                child: _statusTile(
-                  icon: Icons.water_drop_outlined,
-                  label: '습도',
-                  value: loading ? '-' : status != null ? '${status.humidity.toStringAsFixed(1)}%' : '-',
-                  color: const Color(0xFF00B4D8),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -179,43 +138,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
         );
       },
-    );
-  }
-
-  Widget _statusTile({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-          ),
-        ],
-      ),
     );
   }
 
