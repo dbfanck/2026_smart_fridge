@@ -20,10 +20,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
     _itemsFuture = ApiService.getLayouts();
   }
 
-  void _refresh() {
+  Future<void> _refresh() async {
     setState(() {
       _itemsFuture = ApiService.getLayouts();
     });
+    await _itemsFuture;
   }
 
   @override
@@ -56,16 +57,26 @@ class _InventoryScreenState extends State<InventoryScreen> {
         final slot1Items = items.where((e) => e.slotNumber == 1).toList();
         final slot2Items = items.where((e) => e.slotNumber == 2).toList();
 
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildFridgeBody(context, slot1Items, slot2Items),
-              const SizedBox(height: 12),
-              Text(
-                '총 ${items.length}개 식재료',
-                style: TextStyle(color: Colors.grey[600], fontSize: 13),
+        return RefreshIndicator(
+          onRefresh: _refresh,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverFillRemaining(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildFridgeBody(context, slot1Items, slot2Items),
+                      const SizedBox(height: 12),
+                      Text(
+                        '총 ${items.length}개 식재료',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
